@@ -35,7 +35,7 @@ class UploadController extends Controller
         $filePhoto = $request->file('photo');
         $filePhotoName = time() . '_' . $filePhoto->getClientOriginalName();
         // Получите путь к файлу
-        $filePhotoPath = $filePhoto->storeAs('public/fake_photos/'
+        $filePhotoPath = $filePhoto->storeAs('fake_photos/'
             . $request->user()->id . '/' . $fakePhoto->id, $filePhotoName);
         // Получите URL файла
         $filePhotoUrl = url(Storage::url($filePhotoPath));
@@ -44,7 +44,7 @@ class UploadController extends Controller
         $fileBack = $request->file('back');
         $fileBackName = time() . '_' . $fileBack->getClientOriginalName();
         // Получите путь к файлу
-        $fileBackPath = $filePhoto->storeAs('public/fake_photos/'
+        $fileBackPath = $filePhoto->storeAs('fake_photos/'
             . $request->user()->id . '/'. $fakePhoto->id, $fileBackName);
         // Получите URL файла
         $fileBackUrl = url(Storage::url($fileBackPath));
