@@ -25,20 +25,35 @@ class ResizePhotoService
     public function handle(int $photo_id)
     {
         $fakePhoto = FakeImageModel::query()->find($photo_id);
-        info('Photo Entity: ' , $fakePhoto->toArray());
+        // info('Photo Entity: ' , $fakePhoto->toArray());
         $fileDir = 'fake_photos/' . $fakePhoto->author_id .'/' . $fakePhoto->id .'/';
 
         $manager = new ImageManager(new Driver());
 
 
-        $photoContent = Storage::get($fileDir . 'photo.jpg');
-        $photoImage = $manager->read($photoContent);
-
         $backContent = Storage::get($fileDir . 'back.jpg');
         $backImage = $manager->read($backContent);
+        $backImage->scaleDown($this->maxWidth, $this->maxHeight);
 
-        info('Photo size: ', [$photoImage->width(), $photoImage->height()]);
-        info('Back size: ', [$backImage->width(), $backImage->height()]);
+        $photoContent = Storage::get($fileDir . 'photo.jpg');
+        $photoImage = $manager->read($photoContent);
+        // Фото уменьшаем что бы оно помещалось на фон
+        $photoImage->scaleDown($backImage->width(), $backImage->height());
+
+        // info('Photo size: ', [$photoImage->width(), $photoImage->height()]);
+        // info('Back size: ', [$backImage->width(), $backImage->height()]);
+
+        Storage::put($fileDir. 'photo_resize.jpg', $photoImage->toJpeg());
+        Storage::put($fileDir. 'back_resize.jpg', $backImage->toJpeg());
+        $fakePhoto->resize_photo_url = asset(Storage::url($fileDir. 'photo_resize.jpg'));
+        $fakePhoto->resize_back_url = asset(Storage::url($fileDir. 'back_resize.jpg'));
+        $fakePhoto->resized_at = now();
+
+        $fakePhoto->save();
+
+        // На этапе тестирования
+        $removeBack = new RemovePhotoBackService();
+        $removeBack->handle($fakePhoto->id);
     }
 
 
