@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Services;
+namespace App\Services;
 
 use App\Models\FakeImageModel;
 use Illuminate\Http\Request;
@@ -20,7 +20,8 @@ class UploadPhotoService
 
         // Получаем файл из запроса
         $filePhoto = $request->file('photo');
-        $filePhotoName = time() . '_' . $filePhoto->getClientOriginalName();
+        // $filePhotoName = time() . '_' . $filePhoto->getClientOriginalName();
+        $filePhotoName = 'photo' . '.jpg'; // . $filePhoto->getExtension();
         // Получите путь к файлу
         $filePhotoPath = $filePhoto->storeAs('fake_photos/'
             . $request->user()->id . '/' . $fakePhoto->id, $filePhotoName);
@@ -30,6 +31,7 @@ class UploadPhotoService
         // Получаем файл из запроса
         $fileBack = $request->file('back');
         $fileBackName = time() . '_' . $fileBack->getClientOriginalName();
+        $fileBackName = 'back' . '.jpg'; // . $filePhoto->getExtension();
         // Получите путь к файлу
         $fileBackPath = $fileBack->storeAs('fake_photos/'
             . $request->user()->id . '/'. $fakePhoto->id, $fileBackName);
@@ -41,6 +43,10 @@ class UploadPhotoService
         $fakePhoto->original_back_url = $fileBackUrl;
 
         $fakePhoto->save();
+
+        // На этапе тестирования :
+        $serviceResize = new ResizePhotoService();
+        $serviceResize->handle($fakePhoto->id);
 
         return $fakePhoto;
     }
