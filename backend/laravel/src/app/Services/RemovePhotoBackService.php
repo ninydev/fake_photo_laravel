@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\MixPhotoJob;
 use App\Models\FakeImageModel;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -46,8 +47,9 @@ class RemovePhotoBackService
         $fakePhoto->save();
 
         // На этапе тестирования
-        $service = new MixPhotoService();
-        $service->handle($fakePhoto->id);
+//        $service = new MixPhotoService();
+//        $service->handle($fakePhoto->id);
+        MixPhotoJob::dispatch($fakePhoto->id);
 
     }
 }

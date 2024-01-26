@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\ResizePhotoJob;
 use App\Models\FakeImageModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -45,8 +46,12 @@ class UploadPhotoService
         $fakePhoto->save();
 
         // На этапе тестирования :
-        $serviceResize = new ResizePhotoService();
-        $serviceResize->handle($fakePhoto->id);
+//        $serviceResize = new ResizePhotoService();
+//        $serviceResize->handle($fakePhoto->id);
+
+        // Вместо того, что бы самому выполнять задание
+        // я оставлю запись на холодильнике - нужно ВОТ ЭТО сделать с этим
+        ResizePhotoJob::dispatch($fakePhoto->id);
 
         return $fakePhoto;
     }

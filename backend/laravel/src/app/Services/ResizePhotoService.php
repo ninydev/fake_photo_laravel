@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Jobs\RemovePhotoBackJob;
+use App\Jobs\ResizePhotoJob;
 use App\Models\FakeImageModel;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
@@ -52,8 +54,9 @@ class ResizePhotoService
         $fakePhoto->save();
 
         // На этапе тестирования
-        $removeBack = new RemovePhotoBackService();
-        $removeBack->handle($fakePhoto->id);
+//        $removeBack = new RemovePhotoBackService();
+//        $removeBack->handle($fakePhoto->id);
+        RemovePhotoBackJob::dispatch($fakePhoto->id);
     }
 
 
