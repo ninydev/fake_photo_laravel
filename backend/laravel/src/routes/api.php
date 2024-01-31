@@ -20,9 +20,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register',[AuthController::class,'register']);
-Route::post('login', [AuthController::class,'login']);
-Route::post('refresh', [AuthController::class,'refresh']);
-Route::post('logout', [AuthController::class,'logout']);
+// При написании кода программист формирует набор маршрутов для работы с одной
+// или несколькими взаимосвязанными сущностями - максимально независимыми от других
+// Например - User + UserGroup + Jwt - сервис авторизации и аутентификации
+
+// Такой тип может даже навредить работоспособности проекта
+Route::post('auth/register',[AuthController::class,'register']);
+Route::post('auth/login', [AuthController::class,'login']);
+Route::post('auth/refresh', [AuthController::class,'refresh']);
+Route::post('auth/logout', [AuthController::class,'logout']);
+
 
 Route::post('fake_images/upload', [UploadController::class,'upload']);

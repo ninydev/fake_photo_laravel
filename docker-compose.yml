@@ -1,13 +1,44 @@
 version: '3'
 services:
+# Вариант - когда часть функционала я выношу в отдельный микросервис
+# очень оправдан для фоновых задач, но может нанести вред для запросов
+#  fakeimages.laravel.api.auth:
+#    build:
+#      dockerfile: Dockerfile_api
+#      context: ./backend/laravel
+#    container_name: fakeimages.laravel.api.auth
+#    env_file:
+#      - ./.env
+#    networks:
+#      - fake_images
+#    depends_on:
+#      - mysql
+#      - redis
 
-  fakeimages.laravel.api:
+#  fakeimages.laravel.api:
+#    build:
+#      dockerfile: Dockerfile_api
+#      context: ./backend/laravel
+#    container_name: fakeimages.laravel.api
+#    ports:
+#      - '8000:8000'
+#    env_file:
+#      - ./.env
+#    networks:
+#      - fake_images
+#    depends_on:
+#      - mysql
+#      - redis
+
+
+# -------------------------------------------------------------
+# Вариант, когда 1 сервер не справляется с задачами - я могу создать 2-3 и тд серверов
+# по факту - копий исходного сервиса. И случайным образом распределить между ними нагрузку
+  fakeimages.laravel.api.sunny:
     build:
       dockerfile: Dockerfile_api
       context: ./backend/laravel
-    container_name: fakeimages.laravel.api
-    ports:
-      - '8000:8000'
+    container_name: fakeimages.laravel.api.sunny
     env_file:
       - ./.env
     networks:
@@ -15,7 +46,22 @@ services:
     depends_on:
       - mysql
       - redis
+  fakeimages.laravel.api.jonny:
+    build:
+      dockerfile: Dockerfile_api
+      context: ./backend/laravel
+    container_name: fakeimages.laravel.api.jonny
+    env_file:
+      - ./.env
+    networks:
+      - fake_images
+    depends_on:
+      - mysql
+      - redis
+# -------------------------------------------------------------
 
+# Ведение фоновых задач в отдельном микросервисе практически всегда оправдывает себя
+# с помощью управления очередями я могу еще и по типам вести задачи
   fakeimages.laravel.jobs:
     build:
       dockerfile: Dockerfile_job
@@ -67,7 +113,10 @@ services:
     networks:
       - fake_images
     depends_on:
-      - fakeimages.laravel.api
+      # - fakeimages.laravel.api.auth
+      # - fakeimages.laravel.api
+      - fakeimages.laravel.api.jonny
+      - fakeimages.laravel.api.sunny
       - fakeimages.laravel.jobs
       - redis
       - mysql
