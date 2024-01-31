@@ -21,6 +21,7 @@ class UploadController extends Controller
 
     function upload(UploadPhotoRequest $request)
     {
+        \Laravel\Prompts\info("Start Upload");
         $fakePhoto =$this->photoService->upload($request);
         return response()->json($fakePhoto);
     }
